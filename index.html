@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SIPESOS - Sistem Pendataan Ekonomi & Kondisi Rumah Siswa</title>
+  <!-- Font & Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <!-- File CSS Terpisah -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ================= HALAMAN LOGIN ================= -->
+  <section id="loginView" class="login-wrapper">
+    <div class="login-card">
+      <div class="login-brand">
+        <div class="brand-icon"><i class="fa-solid fa-house-chimney-user"></i></div>
+        <div>
+          <h1>SIPESOS SMKN 12 MALANG</h1>
+          <p>Sistem Informasi Ekonomi & Hunian Siswa</p>
+        </div>
+      </div>
+
+      <div class="demo-box">
+        <p class="demo-title"><i class="fa-solid fa-bolt"></i> Akses Cepat Demo (1-Klik):</p>
+        <div class="demo-buttons">
+          <button type="button" class="btn btn-outline-primary" onclick="quickLogin('siswa')">
+            <i class="fa-solid fa-user-graduate"></i> Masuk sebagai Siswa
+          </button>
+          <button type="button" class="btn btn-outline-dark" onclick="quickLogin('admin')">
+            <i class="fa-solid fa-user-shield"></i> Masuk sebagai Admin
+          </button>
+        </div>
+      </div>
+
+      <div class="divider"><span>atau masuk manual</span></div>
+
+      <form id="loginForm">
+        <div class="form-group">
+          <label>Peran Pengguna</label>
+          <select id="loginRole" class="form-control">
+            <option value="siswa">Siswa</option>
+            <option value="admin">Admin / Wali Kelas / BK</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label id="usernameLabel">NISN / Nama Lengkap</label>
+          <input type="text" id="loginUsername" class="form-control" placeholder="Contoh: 0081234567" required>
+        </div>
+        <div class="form-group">
+          <label>Kata Sandi</label>
+          <input type="password" id="loginPassword" class="form-control" value="123456" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">
+          Masuk ke Sistem <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </form>
+    </div>
+  </section>
+
+  <!-- ================= APLIKASI UTAMA ================= -->
+  <div id="appShell" class="app-shell hidden">
+    <!-- Top Navbar -->
+    <header class="navbar">
+      <div class="nav-brand">
+        <i class="fa-solid fa-house-chimney-user"></i>
+        <span>SIPESOS SMKN 12 MALANG</span>
+        <span id="roleBadge" class="badge badge-primary">Siswa</span>
+      </div>
+      <div class="nav-user">
+        <span id="currentUserName" class="user-greeting">Halo, Pengguna</span>
+        <button class="btn btn-danger btn-sm" onclick="logout()">
+          <i class="fa-solid fa-right-from-bracket"></i> Keluar
+        </button>
+      </div>
+    </header>
+
+    <!-- ================= VIEW 1: DASHBOARD SISWA ================= -->
+    <main id="siswaView" class="container hidden">
+      <div class="page-header">
+        <div>
+          <h2>Formulir Data Ekonomi & Kondisi Tempat Tinggal</h2>
+          <p>Lengkapi data terbaru Anda dengan jujur untuk keperluan pemetaan bantuan pendidikan (KIP/Beasiswa).</p>
+        </div>
+        <div id="studentStatusBanner" class="status-pill status-pending">
+          <i class="fa-solid fa-clock"></i> Status: Belum Diverifikasi
+        </div>
+      </div>
+
+      <form id="studentDataForm" class="grid-form">
+        <!-- Kartu 1: Identitas Siswa -->
+        <div class="card">
+          <div class="card-header">
+            <i class="fa-solid fa-id-card text-primary"></i>
+            <h3>1. Identitas Siswa</h3>
+          </div>
+          <div class="card-body">
+            <div class="form-row">
+              <div class="form-group">
+                <label>NISN *</label>
+                <input type="text" id="sNisn" class="form-control" required placeholder="008xxxxxxx">
+              </div>
+              <div class="form-group">
+                <label>Kelas *</label>
+                <input type="text" id="sKelas" class="form-control" required placeholder="Contoh: XI RPL 1">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Nama Lengkap Siswa *</label>
+              <input type="text" id="sNama" class="form-control" required placeholder="Masukkan nama lengkap">
+            </div>
+            <div class="form-group">
+              <label>Nomor WhatsApp Aktif *</label>
+              <input type="tel" id="sPhone" class="form-control" required placeholder="08xxxxxxxxxx">
+            </div>
+          </div>
+        </div>
+
+        <!-- Kartu 2: Kondisi Ekonomi & Status Keluarga -->
+        <div class="card">
+          <div class="card-header">
+            <i class="fa-solid fa-wallet text-success"></i>
+            <h3>2. Kondisi Ekonomi & Status Keluarga</h3>
+          </div>
+          <div class="card-body">
+            <div class="form-row">
+              <div class="form-group">
+                <label>Status Keluarga *</label>
+                <select id="sStatusKeluarga" class="form-control" required>
+                  <option value="Lengkap">Keluarga Lengkap (Ayah & Ibu)</option>
+                  <option value="Yatim">Yatim (Ayah Meninggal)</option>
+                  <option value="Piatu">Piatu (Ibu Meninggal)</option>
+                  <option value="Yatim Piatu">Yatim Piatu</option>
+                  <option value="Orang Tua Bercerai">Orang Tua Bercerai</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Kategori Ekonomi *</label>
+                <select id="sEkonomi" class="form-control" required>
+                  <option value="Kurang Mampu">Kurang Mampu (&lt; Rp 1.500.000/bln)</option>
+                  <option value="Menengah Bawah">Menengah Bawah (Rp 1,5 - 3 Juta/bln)</option>
+                  <option value="Menengah">Menengah (Rp 3 - 6 Juta/bln)</option>
+                  <option value="Mampu">Mampu (&gt; Rp 6 Juta/bln)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>Pekerjaan Orang Tua / Wali *</label>
+                <input type="text" id="sPekerjaan" class="form-control" required placeholder="Contoh: Buruh Harian / Pedagang">
+              </div>
+              <div class="form-group">
+                <label>Jumlah Tanggungan Keluarga *</label>
+                <input type="number" id="sTanggungan" class="form-control" min="1" max="15" value="3" required>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>Status Kepemilikan Rumah *</label>
+                <select id="sKepemilikanRumah" class="form-control" required>
+                  <option value="Milik Sendiri">Milik Sendiri</option>
+                  <option value="Kontrak / Sewa">Kontrak / Sewa</option>
+                  <option value="Menumpang Kerabat">Menumpang Keluarga / Kerabat</option>
+                  <option value="Rumah Dinas">Rumah Dinas</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Kepemilikan Kartu Bantuan</label>
+                <select id="sBantuan" class="form-control">
+                  <option value="Tidak Ada">Tidak Ada</option>
+                  <option value="KIP (Kartu Indonesia Pintar)">KIP (Kartu Indonesia Pintar)</option>
+                  <option value="PKH / KKS">PKH / KKS</option>
+                  <option value="SKTM Kelurahan">SKTM Kelurahan</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Kartu 3: Alamat Saat Ini -->
+        <div class="card">
+          <div class="card-header">
+            <i class="fa-solid fa-location-dot text-danger"></i>
+            <h3>3. Alamat Domisili Saat Ini</h3>
+          </div>
+          <div class="card-body">
+            <div class="form-group">
+              <label>Alamat Lengkap (Jalan, RT/RW, Dusun) *</label>
+              <textarea id="sAlamat" class="form-control" rows="3" required placeholder="Contoh: Jl. Melati No. 14, RT 02 / RW 05"></textarea>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Kelurahan / Desa *</label>
+                <input type="text" id="sKelurahan" class="form-control" required placeholder="Nama Kelurahan">
+              </div>
+              <div class="form-group">
+                <label>Kecamatan & Kota/Kab *</label>
+                <input type="text" id="sKecamatan" class="form-control" required placeholder="Contoh: Lowokwaru, Malang">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Titik Koordinat GPS (Opsional)</label>
+              <div class="input-group">
+                <input type="text" id="sKoordinat" class="form-control" placeholder="-7.9666, 112.6326">
+                <button type="button" class="btn btn-outline-primary" onclick="ambilLokasiGPS()">
+                  <i class="fa-solid fa-crosshairs"></i> Ambil Lokasi
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Kartu 4: Upload Foto Rumah Terbaru -->
+        <div class="card">
+          <div class="card-header">
+            <i class="fa-solid fa-camera text-warning"></i>
+            <h3>4. Foto Kondisi Rumah Terbaru</h3>
+          </div>
+          <div class="card-body">
+            <p class="helper-text">Unggah foto kondisi rumah saat ini (maksimal 2MB per foto, format JPG/PNG).</p>
+            
+            <div class="upload-grid">
+              <!-- Foto Tampak Depan -->
+              <div class="upload-box" onclick="document.getElementById('fotoDepanInput').click()">
+                <input type="file" id="fotoDepanInput" accept="image/*" hidden onchange="previewImage(this, 'previewDepan', 'depan')">
+                <img id="previewDepan" class="img-preview hidden" alt="Pratinjau Tampak Depan">
+                <div id="placeholderDepan" class="upload-placeholder">
+                  <i class="fa-solid fa-house"></i>
+                  <span>Foto Rumah Tampak Depan *</span>
+                  <small>Klik untuk memilih foto</small>
+                </div>
+              </div>
+
+              <!-- Foto Bagian Dalam -->
+              <div class="upload-box" onclick="document.getElementById('fotoDalamInput').click()">
+                <input type="file" id="fotoDalamInput" accept="image/*" hidden onchange="previewImage(this, 'previewDalam', 'dalam')">
+                <img id="previewDalam" class="img-preview hidden" alt="Pratinjau Bagian Dalam">
+                <div id="placeholderDalam" class="upload-placeholder">
+                  <i class="fa-solid fa-couch"></i>
+                  <span>Foto Ruang Tamu / Dalam</span>
+                  <small>Klik untuk memilih foto</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-actions full-span">
+          <button type="submit" class="btn btn-primary btn-lg">
+            <i class="fa-solid fa-paper-plane"></i> Simpan & Kirim Data ke Admin
+          </button>
+        </div>
+      </form>
+    </main>
+
+    <!-- ================= VIEW 2: DASHBOARD ADMIN ================= -->
+    <main id="adminView" class="container hidden">
+      <div class="page-header">
+        <div>
+          <h2>Dashboard Pemantauan Ekonomi & Hunian Siswa</h2>
+          <p>Pantau kondisi sosial ekonomi, status keluarga, alamat domisili, dan verifikasi foto rumah siswa.</p>
+        </div>
+        <button class="btn btn-outline-primary" onclick="resetDemoData()">
+          <i class="fa-solid fa-rotate"></i> Reset Data Contoh
+        </button>
+      </div>
+
+      <!-- KPI Cards -->
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-icon bg-blue"><i class="fa-solid fa-users"></i></div>
+          <div>
+            <span class="kpi-label">Total Siswa Terdata</span>
+            <h3 id="statTotal">0</h3>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon bg-red"><i class="fa-solid fa-hand-holding-heart"></i></div>
+          <div>
+            <span class="kpi-label">Ekonomi Kurang Mampu</span>
+            <h3 id="statKurangMampu">0</h3>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon bg-amber"><i class="fa-solid fa-children"></i></div>
+          <div>
+            <span class="kpi-label">Yatim / Piatu / Yatim Piatu</span>
+            <h3 id="statYatim">0</h3>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon bg-green"><i class="fa-solid fa-circle-check"></i></div>
+          <div>
+            <span class="kpi-label">Sudah Diverifikasi</span>
+            <h3 id="statVerified">0</h3>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filter & Pencarian -->
+      <div class="card filter-bar">
+        <div class="filter-grid">
+          <div class="search-box">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="searchInput" class="form-control" placeholder="Cari nama siswa, NISN, atau alamat..." oninput="renderAdminTable()">
+          </div>
+          <select id="filterEkonomi" class="form-control" onchange="renderAdminTable()">
+            <option value="ALL">Semua Kondisi Ekonomi</option>
+            <option value="Kurang Mampu">Kurang Mampu</option>
+            <option value="Menengah Bawah">Menengah Bawah</option>
+            <option value="Menengah">Menengah</option>
+            <option value="Mampu">Mampu</option>
+          </select>
+          <select id="filterKeluarga" class="form-control" onchange="renderAdminTable()">
+            <option value="ALL">Semua Status Keluarga</option>
+            <option value="Lengkap">Keluarga Lengkap</option>
+            <option value="Yatim">Yatim</option>
+            <option value="Piatu">Piatu</option>
+            <option value="Yatim Piatu">Yatim Piatu</option>
+            <option value="Orang Tua Bercerai">Orang Tua Bercerai</option>
+          </select>
+          <select id="filterStatus" class="form-control" onchange="renderAdminTable()">
+            <option value="ALL">Semua Status Verifikasi</option>
+            <option value="Terverifikasi">Terverifikasi</option>
+            <option value="Menunggu Verifikasi">Menunggu Verifikasi</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Tabel Data Siswa -->
+      <div class="card table-card">
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Siswa</th>
+                <th>Kondisi Ekonomi</th>
+                <th>Status Keluarga</th>
+                <th>Alamat Saat Ini</th>
+                <th>Foto Rumah</th>
+                <th>Status</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="adminTableBody">
+              <!-- Diisi otomatis oleh script.js -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- ================= MODAL DETAIL & VERIFIKASI ADMIN ================= -->
+  <div id="detailModal" class="modal-backdrop hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-file-invoice"></i> Detail Kondisi Ekonomi & Rumah Siswa</h3>
+        <button class="btn-close" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div id="modalBody" class="modal-body">
+        <!-- Diisi dinamis oleh script.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Notifikasi Toast -->
+  <div id="toast" class="toast hidden"></div>
+
+  <!-- File JavaScript Terpisah -->
+  <script src="script.js"></script>
+</body>
+</html>
